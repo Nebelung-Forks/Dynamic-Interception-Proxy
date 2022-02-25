@@ -10,12 +10,13 @@ app.use('/service/', async (req, res) => {
   switch((headers(request.headers)||'text/plain').split('; ')[0]) {
     case "text/html":
       response = `
-<script type="module">
+<script>
 const config = {
   prefix: '/service/',
   encode: 'plain',
   version: '1.0.0'
 }
+${/*fs.readFileSync('./inject.js')*/''}
 if ('serviceWorker' in navigator) {
   var worker = navigator.serviceWorker.register(location.origin+'/sw.js', {
     scope: config.prefix,
@@ -23,7 +24,7 @@ if ('serviceWorker' in navigator) {
   }).then(e => {
 
   });
-${fs.readFileSync('./inject.js')}
+//eval(atob('${(new Buffer.from(fs.readFileSync('./inject.js'), 'utf-8').toString('base64'))}'))
 } else {
   document.write('Your Browser is Unsupported')
 }</script>
